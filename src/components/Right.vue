@@ -103,7 +103,7 @@ function onStopScrollOfList() {
     position: relative;
     border-radius: 8px;
     margin: 24px 0;
-    width: 90%;
+    width: 95%;
     flex-grow: 1;
     display: flex;
     align-items: center;

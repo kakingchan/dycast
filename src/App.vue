@@ -2,12 +2,16 @@
   <div class="main">
     <Left class="left" />
     <Right class="right" />
+    <DrawSetting class="left" />
+    <UserList class="right" />
   </div>
 </template>
 
 <script setup lang="ts">
 import Left from './components/Left.vue';
 import Right from './components/Right.vue';
+import DrawSetting from './components/DrawSetting.vue';
+import UserList from './components/UserList.vue';
 import { ref, reactive, provide, readonly } from 'vue';
 
 /**
@@ -51,6 +55,9 @@ setTimeout(() => {
 const chatList = reactive<Mess[]>([]);
 // 点赞送礼榜
 const rankList = reactive<RankItem[]>([]);
+
+const newMsg = ref<Mess | null>();
+
 // 是否停止自动滚动
 const isStopScroll = ref(false);
 
@@ -68,25 +75,30 @@ provide('setIsStopScroll', (value: boolean) => {
   height: 100vh;
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+
   .left {
     width: 45%;
+    height: 600px;
   }
+
   .right {
     width: 55%;
+    height: 600px;
+    overflow-y: scroll;
   }
 }
+
 @media screen and (max-width: 768px) {
   .main {
     align-items: center;
     flex-direction: column;
     height: 100%;
+
     .left,
     .right {
       width: 100%;
-    }
-    .mess-c {
-      height: 640px;
+      overflow: unset;
     }
   }
-}
-</style>
+}</style>

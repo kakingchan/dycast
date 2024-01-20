@@ -59,6 +59,7 @@
 import { DyClient, handleMessage } from '../utils/client';
 import { getRoomInfoApi } from '@/api/commonApi';
 import { ref, inject, onMounted, type Ref } from 'vue';
+import emitter from '../utils/eventBus';
 
 // 房间号
 const roomNum = ref<string | null>(null);
@@ -184,6 +185,7 @@ function handleChat(data: Mess) {
   switch (type) {
     case 'chat':
       chatList!.push(data);
+      emitter.emit('newMsg', data)
       break;
     case 'member':
       memberCount.value = data.memberCount;
@@ -196,6 +198,7 @@ function handleChat(data: Mess) {
       break;
     case 'social':
       followCount.value = data.followCount;
+      chatList!.push(data);
       break;
     case 'room':
       memberCount.value = data.memberCount;
