@@ -11,12 +11,12 @@
         <input v-model="roomNum" type="text" class="dy-room-input" placeholder="请输入12位房间号" />
         <button class="dy-room-btn" @click="gotoConnect">连接</button>
       </div>
-      <div class="dy-title">转发信息</div>
+      <!-- <div class="dy-title">转发信息</div>
       <div class="dy-room-box">
         <div class="dy-room-tag">ws地址</div>
         <input v-model="relayWs" type="text" class="dy-room-input" placeholder="请输入ws/wss协议链接" />
         <button class="dy-room-btn" @click="relay">转发</button>
-      </div>
+      </div> -->
       <div class="dy-title">
         <span>房间信息</span>
         <span
@@ -192,12 +192,14 @@ function handleChat(data: Mess) {
       break;
     case 'like':
       likeCount.value = data.likeCount;
+      emitter.emit('newMsg', data)
       break;
     case 'gift':
       chatList!.push(data);
       break;
     case 'social':
       followCount.value = data.followCount;
+      emitter.emit('newMsg', data)
       chatList!.push(data);
       break;
     case 'room':

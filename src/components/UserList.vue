@@ -2,7 +2,7 @@
   <div class="r-box">
     <div class="user-list-box">
       <ul class="user-list">
-        <li v-for="(item, index) in userList"> {{index + 1}} - {{ item }}</li>
+        <li :class="{ winner: winnerNum && index === winnerNum - 1 }" v-for="(item, index) in userList"> {{index + 1}} - {{ item }}</li>
       </ul>
     </div>
   </div>
@@ -18,13 +18,14 @@ const userList = ref<Set<string>>(new Set())
 // for (let index = 0; index < 200; index++) {
 //   userList.value.add('fajsklfjsakl'+ index)
 // }
-
+const winnerNum = ref<number>()
 const keyword = ref<string>()
 
 onMounted(() => {
   emitter.on('startLog', handleStartLog);
   emitter.on('stopLog', handleStopLog);
   emitter.on('reStart', handleRestart);
+  emitter.on('setWinner', handleSetWinner);
 });
 
 onUnmounted(() => {
@@ -32,7 +33,7 @@ onUnmounted(() => {
   emitter.off('startLog', handleStartLog);
   emitter.off('stopLog', handleStopLog);
   emitter.off('reStart', handleRestart);
-  
+  emitter.off('setWinner', handleSetWinner);
 });
 
 const handleStartLog = (_keyword: unknown) => {
@@ -44,9 +45,14 @@ const handleStopLog = () => {
   emitter.off('newMsg', handleNewMsg);
 }
 
+const handleSetWinner = (num:unknown) => {
+  winnerNum.value = num as number
+}
+
 const handleRestart = () => {
   // 清空用户列表
   keyword.value = undefined
+  winnerNum.value = undefined
   userList.value = new Set()
 }
 
@@ -58,9 +64,7 @@ const handleNewMsg = (data: unknown) => {
   }
 }
 
-
 </script>
-
 
 <style lang="less" scoped>
 
@@ -79,6 +83,10 @@ const handleNewMsg = (data: unknown) => {
       height: 30px;
       line-height: 30px;
       align-items: center;
+    }
+    .winner{
+      color: #f7315d;
+      border: #f7315d 1px solid;
     }
   }
 }

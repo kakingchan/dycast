@@ -74,6 +74,8 @@ const confirmWinner = () => {
     isWinnerNumWrong.value = true
     return 
   }
+
+  emitter.emit('setWinner', winnerNum.value)
 }
 
 const advanceTaskStatus = () =>{
