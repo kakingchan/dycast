@@ -28,3 +28,6 @@ coverage
 *.sw?
 
 src/assets/data
+
+*.zip
+/抖音*
