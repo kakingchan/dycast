@@ -16,7 +16,7 @@ import emitter from '@/utils/eventBus';
 import { ref, reactive, provide, readonly, onMounted, onUnmounted, defineProps } from 'vue'
 
 interface Props {
-  isSinglePage: {
+  isSinglePage?: {
     types: boolean,
     default: false
   }
@@ -87,6 +87,12 @@ const initPostMessageListener = () => {
   window.addEventListener('beforeunload', function() {
     if (window.opener && !window.opener.closed) {
       window.opener.postMessage('childWindowClosed', '*');
+      const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+      // 将宽度和高度存储到 localStorage 中
+      localStorage.setItem('windowWidth', width + '');
+      localStorage.setItem('windowHeight', height + '');
     }
   });
 }
@@ -162,7 +168,9 @@ const handleInitPostMessage = (data:IinitMessage) => {
 }
 
 const openNewWindow = () => {
-  const windowFeatures = "menubar=no,location=no,resizable=yes,scrollbars=yes,status=yes";
+  const width = localStorage.getItem('windowWidth') || '1080';
+  const height = localStorage.getItem('windowHeight') || '600';
+  const windowFeatures = `menubar=no,location=no,resizable=yes,scrollbars=yes,status=yes,width=${width},height=${height}`;
   subWindow.value = window.open(location.href + '#singlepage', '_blank', windowFeatures);
   subWindow.value!.onload = () => {
     subWindow.value?.postMessage({ type: 'init', payload: { keyword: keyword.value, winnerNum: winnerNum.value, userList: Array.from(userList.value) } }, '*');
