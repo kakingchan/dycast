@@ -16,9 +16,9 @@ import emitter from '@/utils/eventBus';
 import { ref, reactive, provide, readonly, onMounted, onUnmounted, defineProps } from 'vue'
 
 interface Props {
-  isSinglePage: {
+  isSinglePage?: {
     types: boolean,
-    default: false
+    default: false,
   }
 }
 
