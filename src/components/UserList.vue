@@ -1,12 +1,13 @@
 <template>
-  <div class="r-box">
+  <div class="r-box" :class="{ 'single-page': isSinglePage }">
     <button class="new-window-btn" @click="openNewWindow" v-if="!isSinglePage && !subWindow">打开小窗</button>
-    <div class="user-list-box">
+    <div class="user-list-box" ref="scrollContainer">
       <ul class="user-list">
-        <li :class="{ winner: winnerNum && index === winnerNum - 1 }" v-for="(item, index) in userList"> {{ index + 1 }} -
-          {{ item }}</li>
+        <li :class="{ winner: winnerNum && index === winnerNum - 1 }" v-for="(item, index) in userList"> {{ index + 1 }}-{{ item }}</li>
       </ul>
     </div>
+
+    <button v-if="isSinglePage" @click="toggleAutoScroll">{{ isAutoScroll ? '停止滚动' : '自动滚动' }}</button>
   </div>
 </template>
 
@@ -40,12 +41,40 @@ const winnerNum = ref<number>()
 const keyword = ref<string>()
 const subWindow = ref<Window | null>()
 
+const isAutoScroll = ref<boolean>(false);
+
+const scrollContainer = ref<HTMLElement | null>(null);
+let scrollInterval: number | null = null;
+const startAutoScroll = () => {
+  const container = scrollContainer.value;
+  if (container) {
+    scrollInterval = window.setInterval(() => {
+      if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
+        container.scrollLeft += 1.5;
+      } else {
+        container.scrollLeft = 0;
+      }
+    }, 1); // 调整数字来改变滚动速度
+  }
+}
+
+const toggleAutoScroll = () => {
+  if (scrollInterval) {
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+  } else {
+    startAutoScroll();
+  }
+  isAutoScroll.value = !isAutoScroll.value;
+}
+
 onMounted(() => {
   if (!isSinglePage) {
     initEmitter()
     window.addEventListener('message', handleSubWindowMessage)
   } else {
     initPostMessageListener()
+    toggleAutoScroll();
   }
 });
 
@@ -53,6 +82,10 @@ onUnmounted(() => {
   if (!isSinglePage) {
     window.removeEventListener('message', handleSubWindowMessage)
     destoryEmitter()
+  }
+
+  if (scrollInterval) {
+    clearInterval(scrollInterval);
   }
 });
 
@@ -194,14 +227,50 @@ const openNewWindow = () => {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      height: 30px;
-      line-height: 30px;
+      height: 36px;
+      line-height: 36px;
       align-items: center;
     }
 
     .winner {
-      color: #f7315d;
-      border: #f7315d 1px solid;
+      color: #ff0059;
+      border: #fff023 3px solid;
+    }
+  }
+}
+
+.single-page{
+  overflow: hidden;
+  background: #00ff00;
+  min-height: 220px;
+  .user-list-box{
+    width: 100%; /* 根据需要调整宽度 */
+    overflow-x: scroll;
+    padding: 0;
+    margin-top: 60px;
+    padding-bottom: 60px;
+    .user-list{
+      padding: 0;
+      margin: 0;
+      display: flex;
+      height: 75px;
+      li{
+        color: #ce3a00;
+        height: 75px;
+        line-height: 75px;
+        font-size: 75px;
+        display: inline-block;
+        margin-right: 50px; /* 根据需要调整间距 */
+        white-space:nowrap;
+        overflow: unset;
+        text-overflow: unset;
+        font-weight: bold;
+      }
+
+      .winner {
+        color: #e600ff;
+        border: none;
+      }
     }
   }
 }
